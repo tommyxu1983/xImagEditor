@@ -1,0 +1,14 @@
+.XImgEditor-TextEdit{
+  position:relative;
+  .canvasContainer{
+    position:absolute;
+    z-index:1000;
+
+    .canvas4Image {
+      background-color: rgba(5, 238, 255, 0.17);
+    }
+  }
+
+
+}
+

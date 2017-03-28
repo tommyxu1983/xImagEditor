@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mocha</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../mocha.css" />
+  </head>
+  <body>
+    <p>includes.js  includes all the source file needed to be tested</p>
+    <div id="mocha"></div>
+    <div id="XIEWrapper"></div>
+    <script src="../mocha.js"></script>
+    <script src='../chai.js'></script>
+    <script type ="text/javascript" src="../includes.js"></script>
+    <script>
+      mocha.setup({
+        ui: 'bdd',
+      });
+    </script>
+    <script src="tests.js"></script>
+  </body>
+</html>

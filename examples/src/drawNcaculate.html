@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+<!--    <script type="text/javascript" src="../../src/XIE.js"></script>
+    <script type="text/javascript" src="../../src/core/guid.js"></script>
+    <script type="text/javascript" src="../../src/core/utils.js"></script>
+    <script type="text/javascript" src="../../src/core/EventProxy.js"></script>
+    <script type="text/javascript" src="../../src/core/matrix.js"></script>
+    <script type="text/javascript" src="../../src/Transformable.js"></script>
+    <script type="text/javascript" src="../../src/Element.js"></script>
+    <script type="text/javascript" src="../../src/Storage.js"></script>
+    <script type="text/javascript" src="../../src/Container.js"></script>
+
+    <script type="text/javascript" src="../../src/XContext.js"></script>
+    <script type="text/javascript" src="../../src/XCanvas.js"></script>
+
+    <script type="text/javascript" src="../../src/container/Layer.js"></script>
+    <script type="text/javascript" src="../../src/container/Stage.js"></script>
+    <script type="text/javascript" src="../../src/Shape.js"></script>
+    <script type="text/javascript" src="../../src/shape/Circle.js"></script>
+    <script type="text/javascript" src="../../src/shape/Rect.js"></script>
+    <script type="text/javascript" src="../../src/shape/Image.js"></script>
+    <script type="text/javascript" src="../../src/shape/CustomShape.js"></script>
+    <script type="text/javascript" src="../../src/filters/Brighten.js"></script>
+    <script type="text/javascript" src="../../src/filters/ContrastTo.js"></script>-->
+    <script type="text/javascript" src="../includes.js"></script>
+
+
+    <style>
+        button{
+            font-size:18px;
+        }
+    </style>
+</head>
+<body>
+
+<div id = 'XIEWrapper' style="background-color: aquamarine;"></div>
+
+<div id = 'infoDiv2' style="background-color: grey">
+
+    <button id="startPaint" > 开始-画笔 </button>
+    <button id="backPaint" style="display: none"> 撤销 </button>
+    <button id="calArea" > 计算面积 </button>
+</div>
+
+<script>
+
+Imports.LoadInOrder('../../',function(){
+
+    if(XIE){
+
+        var startButton = document.getElementById("startPaint");
+        var backPaint = document.getElementById("backPaint");
+        var calArea = document.getElementById("calArea");
+
+        var stage = new  XIE.Stage({
+            wrapper: 'XIEWrapper',
+            width: 800,
+            height: 600
+        });
+
+
+
+
+
+        var layerPic = new XIE.Layer({
+
+        });
+
+        var drawShapeLayer = new XIE.Layer({
+
+        });
+
+
+
+
+        stage.add(layerPic);
+        stage.add(drawShapeLayer);
+
+
+
+
+        var imageObj = new Image();
+
+        imageObj.src = '../../_examples/img/fact.jpg';
+
+        imageObj.onload = function(){
+            var isPainting=false,
+                    xImage = new XIE.Image({
+                        x:400,
+                        y:300,
+                        offsetX:-300,
+                        offsetY:-200,
+                        width: 600,
+                        height:400,
+                        image: imageObj
+                    }),
+
+                    cShape = new XIE.CustomShape({
+                        stroke:'orange',
+                        draggable: true,
+                        enlargeable:true
+                    });
+
+            layerPic.add(xImage);
+            drawShapeLayer.add(cShape);
+            stage.draw();
+
+            stage.on('click','Layer', function(event){
+
+                if(isPainting){
+                    var x = event.x,
+                            y =event.y;
+
+                    cShape.addPoints(x,y);
+                    /* circle.scale(2);*/
+                    drawShapeLayer.draw();
+                }
+
+
+
+            });
+
+            stage.on('click', 'CustomShape' ,function(event){
+                /*    event.cancelBubble = false;*/
+               /* alert('hahaasdf');*/
+            });
+
+            cShape.on('click', function(event){
+            /*    event.cancelBubble = false;*/
+                /*alert('haha');*/
+            });
+
+            isPainting = false;
+            startButton.addEventListener('click',function(){
+
+                if(! isPainting){
+                    startButton.style.backgroundColor='orange';
+                    startButton.innerText='结束画图';
+                    backPaint.style.display='inline';
+
+
+                    isPainting = true;
+                }else{
+                    startButton.style.backgroundColor='white';
+                    startButton.innerText='开始画图';
+                    backPaint.style.display='none';
+
+                    isPainting = false;
+                    if(cShape.points.length>2){
+                        cShape.closeMyPath();
+                        drawShapeLayer.draw();
+                    }
+                }
+            });
+
+            backPaint.addEventListener('click',function(){
+
+                if(isPainting){
+                    cShape.removeLastPoint();
+                    drawShapeLayer.draw();
+                }
+
+            });
+
+
+            calArea.addEventListener('click',function(){
+                 cShape.points=[{x:100,y:0},{x:200,y:0},{x:250,y:25},{x:225,y:50},{x:250,y:75},{x:200,y:100},{x:100,y:100}];
+
+                 cShape.closeMyPath();
+                 drawShapeLayer.draw();
+                   cShape.points=[{x:100,y:0},{x:200,y:0},{x:200,y:100},{x:100,y:100}];
+                alert("面积："+cShape.getS()+ " 周长： "+ cShape.getC());
+            });
+
+
+
+
+
+
+        };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    }
+
+});
+
+
+</script>
+
+
+</body>
+</html>

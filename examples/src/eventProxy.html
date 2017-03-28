@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="../../src/global.js"></script>
+    <script type="text/javascript" src="../../src/helpers/guid.js"></script>
+    <script type="text/javascript" src="../../src/helpers/utils.js"></script>
+    <script type="text/javascript" src="../../src/helpers/EventProxy.js"></script>
+</head>
+<body>
+
+
+
+
+<script>
+
+    if(XIE && XIE.utils && XIE.EvtProxy){
+        var utils = XIE.utils,
+            EvtProxy =  XIE.EvtProxy,
+            guid = XIE.guid;
+        function A(){
+
+            this._id= guid();
+            this._id2= guid();
+            this._id3=  guid();
+            EvtProxy.call(this);
+        }
+
+        utils.inheritProto(A,EvtProxy);
+
+
+        var a = new A();
+
+
+        //test 1
+        a.on('event1',function(event,para){
+            console.log('event:'+ event + ' para:' + para)
+
+        });
+
+        a.on('event1', evt1Handler2);
+
+         function evt1Handler2(event,para){
+            console.log('event:'+ event + ' para2:' + para)
+        }
+
+        a.on('event2', function(){
+            console.log('event2')
+        });
+
+        a.trigger('event1', 'Triger-event1', 'haha');
+        a.trigger('event2');
+        //test 2
+
+
+        a.off('event1');
+
+        a.trigger('event2', 'Triger-event1', '2');
+
+    }else{
+        console.log('Event object is not loaded')
+    }
+
+
+
+
+
+</script>
+
+
+
+</body>
+</html>

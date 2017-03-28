@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="../../src/global.js"></script>
+    <script type="text/javascript" src="../../src/helpers/utils.js"></script>
+</head>
+<body>
+
+<script>
+
+
+    function Father(a){
+        console.log(a+'调用');
+        this.fatherA = 'father-'+a;
+    }
+
+    Father.prototype = {
+        fproto_M1:function(){return this.fatherA}
+    }
+
+
+    function Son(aFather, aSon){
+        Father.call(this,aFather);
+        this.sonA = 'son-'+aSon;
+    }
+
+    Son.prototype= {
+        sproto_M1:function(){return this.sonA},
+        sproto_M2:function(){return this.fatherA}
+    }
+
+
+
+    XIE.utils.inheritProto(Son,Father);
+
+    var son1 = new Son('son1','son1');
+    var son2 = new Son('son2','son2');
+
+
+
+
+
+
+    Function.prototype.curry = function() {
+        var fn = this;
+        var args = [].slice.call(arguments, 0);
+        return function() {
+            return fn.apply(this, args.concat([].slice.call(arguments, 0)));
+        };
+    }
+
+    /*--------------------------------------------------------------------------*/
+
+    function currying(fn) {
+        var slice = Array.prototype.slice,
+                __args = slice.call(arguments, 1);
+        return function () {
+            var __inargs = slice.call(arguments);
+            return fn.apply(null, __args.concat(__inargs));
+        };
+    }
+
+
+
+    function square(i) {
+        return i * i;
+    }
+
+    function dubble(i) {
+        return i *= 2;
+    }
+
+    function map(handler, list) {
+        return list.map(handler);
+    }
+
+
+
+    var mapSQ = currying(map, square);
+    mapSQ([1, 2, 3, 4, 5]);
+    mapSQ([6, 7, 8, 9, 10]);
+    mapSQ([10, 20, 30, 40, 50]);
+    // ......
+
+    var mapDB = currying(map, dubble);
+    mapDB([1, 2, 3, 4, 5]);
+    mapDB([6, 7, 8, 9, 10]);
+    mapDB([10, 20, 30, 40, 50]);
+
+/*-----------------------------------------------------------------------------*/
+    var asButton = function() {
+        this.hover = function(bool) {
+            bool ? mylib.appendClass('hover') : mylib.removeClass('hover');
+        };
+        this.press = function(bool) {
+            bool ? mylib.appendClass('pressed') : mylib.removeClass('pressed');
+        };
+        this.fire = function() {
+            return this.action();
+        };
+        return this;
+    };
+
+
+    var asRectangle = (function() {
+        function area() {
+            return this.length * this.width;
+        }
+        function grow(growBy) {
+            this.length += growBy, this.width +=growBy;
+        }
+        function shrink(shrinkBy) {
+            this.length -= shrinkBy, this.width -= shrinkBy;
+        }
+        return function(options) {
+            this.area = area;
+            this.grow = grow.bind(this ,options['growBy']);
+            this.shrink = shrink.curry(options['shrinkBy']);
+            return this;
+        };
+    })();
+
+    /*var Test =function(){
+        this.
+    }*/
+
+    var RectangularButton = function(length, width, label, action) {
+        this.length = length;
+        this.width = width;
+        this.label = label;
+        this.action = action;
+    }
+
+
+    asButton.call(RectangularButton.prototype);
+    asRectangle.call(RectangularButton.prototype, {growBy: 2, shrinkBy: 2});
+
+    var button4 = new RectangularButton(2, 1, 'addToDD', function() {return 'added'});
+    button4.area(); //2
+    button4.grow();
+    button4.shrink();
+    button4.area(); //12
+    button4.fire();
+
+
+</script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script type="text/javascript" src="../../src/XIE.js"></script>
+    <script type="text/javascript" src="../../src/helpers/guid.js"></script>
+    <script type="text/javascript" src="../../src/helpers/utils.js"></script>
+    <script type="text/javascript" src="../../src/helpers/EventProxy.js"></script>
+    <script type="text/javascript" src="../../src/Element.js"></script>
+    <script type="text/javascript" src="../../src/Storage.js"></script>
+    <script type="text/javascript" src="../../src/Container.js"></script>
+
+    <script type="text/javascript" src="../../src/XContext.js"></script>
+    <script type="text/javascript" src="../../src/XCanvas.js"></script>
+
+    <script type="text/javascript" src="../../src/container/Layer.js"></script>
+    <script type="text/javascript" src="../../src/container/Stage.js"></script>
+    <script type="text/javascript" src="../../src/Shape.js"></script>
+    <script type="text/javascript" src="../../src/shape/Circle.js"></script>
+    <style>
+        .dvi{
+
+        }
+    </style>
+
+</head>
+<body>
+
+
+    <div id = 'XIEWrapper' style="background-color: aquamarine;"></div>
+
+    <div id = 'infoDiv' style="background-color: cornflowerblue">
+
+    </div>
+
+
+    <script>
+        Imports.LoadInOrder('../../',function(){
+
+            if(XIE){
+                var stage = new  XIE.Stage({
+                    wrapper: 'XIEWrapper',
+                    width: 800,
+                    height: 600
+                });
+
+                var layer = new XIE.Layer({
+                });
+
+                var circle1 = new XIE.Circle({
+                    x: 400,
+                    y: 300,
+                    radius: 200,
+                    fill: 'orange',
+                    stroke: 'red'
+                });
+
+                var circle2 = new XIE.Circle({
+                    x: 230,
+                    y: 150,
+                    radius: 100,
+                    fill: 'green',
+                    stroke: 'red'
+                });
+
+                layer.addToDD(circle1);
+                layer.addToDD(circle2);
+                stage.addToDD(layer);
+
+
+                stage.on('mousedown', function(event){
+                    alert('mouse down');
+                });
+
+                stage.on('mouseup', function(event){
+                    alert('mouse up');
+                });
+
+                stage.on('mousemove', function(event){
+                    var infoDiv = document.getElementById('infoDiv');
+                    infoDiv.innerHTML= 'target=' + event.target.attr.fill + ' X='+ event.x +'  Y='+event.y;
+
+
+                });
+
+
+                var kk =0;
+                /*
+                 //测试 HitCanvas 是不是和 viewCanvas 重叠
+                 var contentDiv = stage.getContentDiv();
+                 contentDiv.appendChild(layer.getHitCanvas().getCanvas());
+                 */
+
+
+            }
+
+        });
+
+
+    </script>
+
+</body>
+</html>

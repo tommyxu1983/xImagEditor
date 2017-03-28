@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script type="text/javascript" src="../includes.js"></script>
+
+    <style>
+        button{
+            font-size:18px;
+        }
+    </style>
+</head>
+<body>
+
+<div id = 'XIEWrapper' style="background-color: aquamarine;"></div>
+<div id="hit"></div>
+<div id = 'infoDiv1' style="background-color: cornflowerblue">
+
+ <div><label >放大</label> <input type="range" id="scale-range" min="0.1" max="3.0" step="0.1" value="1.0" style="display:inline-block;margin:20px auto;width:800px"/></div>
+    <div><label >亮度</label><input type="range" id="birghtness-range"  min="-1" max="1" step="0.01" value="0" style="display:inline-block;margin:20px auto;width:800px"/></div>
+    <div><label >对比度</label><input type="range" id="contrast-range"  min=".01" max="3" step="0.01" value="1" style="display:inline-block;margin:20px auto;width:800px"/></div>
+
+
+</div>
+
+<div id = 'infoDiv2' style="background-color: antiquewhite">
+    <button id="rotationImg"> 旋转图片 </button>
+    <button id="rotationRectOrange" style="background-color: orange"> 旋转矩形 </button>
+    <button id="rotationRectGreen" style="background-color: green"> 旋转矩形 </button>
+    <button id="rotationStage"> 旋转舞台 </button>
+    <button id="rotationPubSelf"> 公转自转 </button>
+    <button id="stop"> stop </button>
+
+    <button id="startPaint" > 画不规则形状 </button>
+    <button id="backPaint" style="display: none"> 撤销 </button>
+    <button id="16To8">窗宽窗位</button>
+    <span id="infoXY" style="display: inline-block"></span>
+</div>
+
+<div id="infoDiv3" style="display: block ; width:600px; height:600px"></div>
+
+<script>
+
+    var scaleSliderImg = document.getElementById("scale-range");
+    var brightnessSliderImg = document.getElementById("birghtness-range");
+    var contrastSliderImg =document.getElementById("contrast-range");
+    var rotateImg = document.getElementById("rotationImg");
+    var rotateRectOrange = document.getElementById("rotationRectOrange");
+    var rotateRectGreen = document.getElementById("rotationRectGreen");
+    var rotateLayer = document.getElementById("rotationStage");
+    var rotatePubSelf = document.getElementById("rotationPubSelf");
+    var stop = document.getElementById("stop");
+    var hitWrap = document.getElementById("hit");
+
+
+    var startButton = document.getElementById("startPaint");
+    var backPaint = document.getElementById("backPaint");
+    var convert16To8 = document.getElementById("16To8");
+    Imports.LoadInOrder('../../',function(){
+        if(XIE){
+            var stage = new  XIE.Stage({
+                wrapper: 'XIEWrapper',
+                width: 800,
+                height: 600
+            });
+
+
+
+            var layerPic = new XIE.Layer({
+
+            });
+
+            var layerShape = new XIE.Layer({
+
+            });
+
+            var layerPubSelf = new XIE.Layer({
+                x:400,
+                y:300
+            });
+
+
+            var drawShapeLayer = new XIE.Layer({
+
+            });
+
+            stage.add(layerPic);
+            stage.add(layerShape);
+            stage.add(layerPubSelf);
+
+            stage.add(drawShapeLayer);
+
+            var rectGreen = new XIE.Rect({
+
+                x:400,
+                y:300,
+                offsetX:-100,
+                offsetY:-50,
+
+                width: 200,
+                height: 100,
+
+                fill : 'green',
+                draggable: true
+            });
+
+            var rectOrange = new XIE.Rect({
+
+                x:400,
+                y:300,
+
+                offsetX:100,
+                offsetY:100,
+
+
+                width: 200,
+                height: 100,
+                rotate:90,
+
+                fill : 'orange',
+                draggable: true
+            });
+
+            var rectBlue = new XIE.Rect({
+
+                x:100,
+                /*   y:100,*/
+
+
+                offsetX:-50,
+                offsetY:-50,
+
+
+                width: 100,
+                height: 100,
+
+                fill : 'blue',
+                draggable: true
+            });
+
+            var cShape = new XIE.CustomShape({
+                stroke:'orange',
+                draggable: true
+            });
+
+
+            var imageObj = new Image();
+
+            imageObj.src = '../../_examples/img/16bitRG.bmp';
+
+            imageObj.onload = function(){
+                var xImage = new XIE.Image16bit({
+
+                    x:400,
+                    y:300,
+                    offsetX:-300,
+                    offsetY:-200,
+                    width: 600,
+                    height:400,
+                    image: imageObj,
+                    draggable: true,
+                    enlargeable: true
+                });
+
+                xImage.addFilters([XIE.Filters.Brighten,XIE.Filters.ContrastTo]);
+
+                layerPic.add(xImage);
+             /*   layerShape.add(rectGreen);
+                layerShape.add(rectOrange);
+                layerPubSelf.add(rectBlue);
+                drawShapeLayer.add(cShape);*/
+                stage.draw();
+
+
+
+
+                scaleSliderImg.addEventListener('change',function(event){
+
+                    var value = this.value;
+                    xImage.scale(parseFloat(value));
+                    layerPic.draw();
+                });
+
+                brightnessSliderImg.addEventListener('change',function(event){
+                    var brightness = this.value;
+                    xImage.brightness(parseFloat(brightness));
+                    layerPic.draw();
+                });
+
+                contrastSliderImg.addEventListener('change', function(event){
+                    var contrast = this.value;
+                    xImage.contrast(parseFloat(contrast));
+                    layerPic.draw();
+                });
+
+                var dgreeImg = 0, dgreeRect = 0, dgreeLayer= 0, selfDegree = 0 ,dIncrease=10;
+
+                rotateImg.addEventListener('click',function(event){
+                    dgreeImg += dIncrease;
+                    xImage.rotate(dgreeImg);
+                    layerPic.draw();
+
+
+
+                });
+
+                rotateRectOrange.addEventListener('click',function(event){
+                    dgreeRect += dIncrease;
+                    rectOrange.rotate(dgreeRect);
+                    layerShape.draw();
+                });
+
+                rotateRectGreen.addEventListener('click',function(event){
+                    dgreeRect += dIncrease;
+                    rectGreen.rotate(dgreeRect);
+                    layerShape.draw();
+
+                });
+
+
+                rotateLayer.addEventListener('click',function(event){
+                    dgreeLayer += dIncrease;
+                    stage.rotate(dgreeLayer);
+                    stage.draw();
+                });
+
+                var ID
+                rotatePubSelf.addEventListener('click',function(event){
+                    if(! ID){
+                        ID=setInterval(function(){ selfDegree += dIncrease;
+                            /*     stage.rotate(selfDegree);*/
+
+                            rectBlue.rotate(selfDegree);
+                            layerPubSelf.rotate(selfDegree);
+
+                            layerPubSelf.draw();},100);
+                    }
+
+
+                });
+
+                stop.addEventListener('click',function(event){
+
+                    clearInterval(ID);
+                    ID = null;
+
+                });
+
+
+
+                stage.on('click', function(event){
+
+                    if(isPainting){
+                        var x = event.x,
+                                y =event.y;
+
+                        cShape.addPoints(x,y);
+                        /* circle.scale(2);*/
+                        drawShapeLayer.draw();
+                    }
+
+           /*        if( event.target ===xImage){
+                      var localXY =  event.target.translate2LocalXY(event.x,event.y),
+                              x=Math.round(localXY.x),
+                              y=Math.round(localXY.y);
+
+                       var newXCanvas = event.target.wWwp(x,y,100,100);
+
+                       var infoDiv3= document.getElementById('infoDiv3');
+                       while(infoDiv3.lastChild){
+                           infoDiv3.removeChild(infoDiv3.lastChild);
+                       }
+
+                       infoDiv3.appendChild(newXCanvas.$canvas);
+
+
+
+
+                       document.getElementById('infoXY').innerHTML='x:'+localXY.x  +' y:'+localXY.y;
+
+                   }*/
+
+                });
+
+
+
+                stage.on('mousemove',XIE.utils.throttle(function(event){
+
+                    if( event.target ===xImage){
+                        var localXY =  event.target.translate2LocalXY(event.x,event.y),
+                                x=Math.round(localXY.x),
+                                y=Math.round(localXY.y);
+
+                        var newXCanvas = event.target.wWwp(x,y,100,100);
+
+                        var infoDiv3= document.getElementById('infoDiv3');
+                        while(infoDiv3.lastChild){
+                            infoDiv3.removeChild(infoDiv3.lastChild);
+                        }
+
+                        infoDiv3.appendChild(newXCanvas.$canvas);
+
+
+
+
+                        document.getElementById('infoXY').innerHTML='x:'+localXY.x  +' y:'+localXY.y;
+
+                    }
+                },100)
+                ) ;
+
+                var isPainting = false;
+                startButton.addEventListener('click',function(){
+
+                    if(! isPainting){
+                        startButton.style.backgroundColor='orange';
+                        startButton.innerText='结束画图';
+                        backPaint.style.display='inline';
+
+                        isPainting = true;
+                    }else{
+                        startButton.style.backgroundColor='white';
+                        startButton.innerText='开始画图';
+                        backPaint.style.display='none';
+                        isPainting = false;
+                        if(cShape.points.length>2){
+                            cShape.closeMyPath();
+                            drawShapeLayer.draw();
+                        }
+                    }
+                });
+
+                backPaint.addEventListener('click',function(){
+
+                    if(isPainting){
+                        cShape.removeLastPoint();
+                        drawShapeLayer.draw();
+                    }
+
+                });
+
+            };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        }
+    });
+
+
+</script>
+
+
+</body>
+</html>

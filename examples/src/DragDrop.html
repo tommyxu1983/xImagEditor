@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script type="text/javascript" src="../includes.js"></script>
+
+
+    <style>
+        button{
+            font-size:18px;
+        }
+    </style>
+</head>
+<body>
+
+<div id = 'XIEWrapper' style="background-color: aquamarine;"></div>
+
+<div style="background-color: grey">
+
+        <button id="startAnim">start animation</button>
+        <button id="EndAnim">stop animation</button>
+
+
+    <button id="rotate">rotate +90</button>
+
+</div>
+
+
+<div id = 'infoDiv1' style="background-color: grey">
+</div>
+
+
+
+<script>
+
+
+
+
+
+
+    var infoDiv1 = document.getElementById('infoDiv1');
+
+    Imports.LoadInOrder('../../',function(){
+
+        if(XIE){
+
+            var stage = new  XIE.Stage({
+                wrapper: 'XIEWrapper',
+                width: 800,
+                height: 600
+            });
+
+
+
+
+
+            var layerPic = new XIE.Layer({});
+
+            var drawShapeLayer = new XIE.Layer({
+
+            });
+
+            var animLayer = new XIE.Layer({});
+
+
+
+
+            stage.add(layerPic);
+
+
+
+
+
+            var imageObj = new Image();
+
+            imageObj.src = '../../playground/img/chui.jpg';
+
+            imageObj.onload = function(){
+                var xImage = new XIE.Image({
+                    width: 600,
+                    height:400,
+                    x:400,
+                    y:300,
+                    offsetX:-300,
+                    offsetY:-200,
+                    draggable:true,
+                    enlargeable:true,
+                    image: imageObj
+                }),
+
+                center = new XIE.Circle({
+                    x: 400,
+                    y:300,
+                    radius:5,
+                    stroke:'orange',
+                    fill:'red',
+                    draggable:true,
+                    enlargeable:true
+                }),
+
+                circle = new XIE.Circle({
+                    x: 400,
+                    y:300,
+                    radius:50,
+                    stroke:'orange',
+                    draggable:true,
+                    onDragging:function(event){
+                        infoDiv1.innerHTML= 'x:' + event.x + ' y:'+event.y;
+                    },
+                    enlargeable:true
+                }),
+
+                movingRect = new XIE.Rect({
+                   x: 400,
+                    y:300,
+                    /*offsetX:-100,
+                    offsetY:-50,*/
+                    width:200,
+                    height:100,
+                    fill:'green',
+                    stroke:'black'
+                });
+
+
+
+                layerPic.add(xImage);
+
+                drawShapeLayer.add(circle);
+                drawShapeLayer.add(center);
+                animLayer.add(movingRect);
+
+                stage.add(drawShapeLayer);
+                stage.add(animLayer);
+                console.log("stage add drawShapeLayer");
+                stage.draw();
+
+                var lastTime= new Date().getTime(),
+                        currTime=lastTime;
+                stage.on('mousemove',function(evt){
+                    if(evt.target && evt.target instanceof XIE.Shape){
+                        if(evt.target.isAtEdge({x:evt.x, y:evt.y}) ){
+                            stage.getWrapper().style.cursor="crosshair";
+                        }else{
+                            stage.getWrapper().style.cursor="pointer";
+                        }
+
+                    }else{
+                        stage.getWrapper().style.cursor="default";
+                    }
+                });
+                var degree =0;
+                var anim = new XIE.Animation(function(frame) {
+                    degree += 10;
+                    if(degree>360){ degree =0;}
+
+                    movingRect.rotate(degree);
+
+                    console.log(degree + "  period:"+ (currTime-lastTime));
+                    lastTime=currTime;
+                    currTime=new Date().getTime();
+
+                }, animLayer);
+
+                document.getElementById('startAnim').addEventListener('click',function(){
+                    anim.start();
+                });
+
+                document.getElementById('EndAnim').addEventListener('click',function(){
+                    anim.stop();
+                });
+
+                var degree4Image = 0;
+                document.getElementById('rotate').addEventListener('click', function(){
+                    // force degree not beyond 360
+                    degree4Image = degree4Image>360? ((degree4Image = degree4Image-360), degree4Image) : degree4Image;
+                    degree4Image = degree4Image + 90;
+
+                    xImage.rotate(degree4Image);
+                    layerPic.draw();
+                });
+
+            };
+
+
+        }
+
+    });
+
+
+
+
+
+</script>
+
+
+</body>
+</html>

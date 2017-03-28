@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AAAA,oBAAoB;EAClB,QAAQ,EAAC,QAAQ;EACjB,qCAAgB;IACd,QAAQ,EAAC,QAAQ;IACjB,OAAO,EAAC,IAAI;IAEZ,mDAAc;MACZ,gBAAgB,EAAE,uBAAuB",
+"sources": ["XImgEditor.scss"],
+"names": [],
+"file": "XImgEditor.css"
+}

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+
+        <meta charset="UTF-8">
+        <title>XIM-Img.html</title>
+
+        <script type="text/javascript" src="../../src/XIE.js"></script>
+        <script type="text/javascript" src="../../src/helpers/guid.js"></script>
+        <script type="text/javascript" src="../../src/helpers/utils.js"></script>
+        <script type="text/javascript" src="../../src/helpers/EventProxy.js"></script>
+    <script type="text/javascript" src="../../src/helpers/matrix.js"></script>
+    <script type="text/javascript" src="../../src/Transformable.js"></script>
+        <script type="text/javascript" src="../../src/Element.js"></script>
+        <script type="text/javascript" src="../../src/Storage.js"></script>
+        <script type="text/javascript" src="../../src/Container.js"></script>
+
+        <script type="text/javascript" src="../../src/XContext.js"></script>
+        <script type="text/javascript" src="../../src/XCanvas.js"></script>
+
+        <script type="text/javascript" src="../../src/container/Layer.js"></script>
+        <script type="text/javascript" src="../../src/container/Stage.js"></script>
+        <script type="text/javascript" src="../../src/Shape.js"></script>
+        <script type="text/javascript" src="../../src/shape/Circle.js"></script>
+        <script type="text/javascript" src="../../src/shape/Image.js"></script>
+
+
+
+</head>
+<body>
+
+
+<div id = 'XIEWrapper' style="background-color: aquamarine;"></div>
+
+<div id = 'infoDiv1' style="background-color: cornflowerblue">
+
+    <input type="range" id="scale-range" min="0.1" max="3.0" step="0.1" value="1.0" style="display:block;margin:20px auto;width:800px"/>
+</div>
+
+<div id = 'infoDiv2' style="background-color: antiquewhite">
+
+
+</div>
+
+
+
+<script>
+
+    var slider = document.getElementById("scale-range");
+
+    if(XIE){
+        var stage = new  XIE.Stage({
+            wrapper: 'XIEWrapper',
+            width: 800,
+            height: 600
+        });
+
+        var layer = new XIE.Layer({
+        });
+
+        stage.addToDD(layer);
+
+        var imageObj = new Image();
+
+        imageObj.src = '../../_examples/img/niu.jpg';
+
+        imageObj.onload = function(){
+            var xImage = new XIE.Image({
+                x:100,
+                y:100,
+                width: 600,
+                height:400,
+                image: imageObj
+            });
+            layer.addToDD(xImage);
+            layer.draw();
+
+            slider.addEventListener('change',function(event){
+                var value = this.value;
+                layer.scale(parseFloat(value));
+                layer.draw();
+            });
+        };
+
+
+        var kk =0;
+        /*
+         //测试 HitCanvas 是不是和 viewCanvas 重叠
+         var contentDiv = stage.getContentDiv();
+         contentDiv.appendChild(layer.getHitCanvas().getCanvas());
+         */
+
+
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "name": "XIE",
+  "version": "1.0.1",
+  "description": "lite weight image editor",
+  "scripts": {
+    "test_APIs": "./node_modules/.bin/mocha-phantomjs test/unit_api/index.html"
+  },
+  "author": "Xu Lu",
+  "license": "MIT",
+  "devDependencies": {
+    "browserify": "^13.1.0",
+    "chai": "^3.5.0",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-jshint": "^2.0.4",
+    "gulp-replace-task": "^0.11.0",
+    "gulp-sass": "^2.3.2",
+    "gulp-uglify": "^2.0.0",
+    "jshint": "^2.9.4",
+    "mocha": "^3.2.0",
+    "mocha-phantomjs": "^4.1.0",
+    "mochawesome": "^2.0.4",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.7.0"
+  }
+}

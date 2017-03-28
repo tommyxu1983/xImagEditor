@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script type="text/javascript" src="../includes.js"></script>
+
+
+    <style>
+        button{
+            font-size:18px;
+        }
+    </style>
+</head>
+<body>
+
+<div>Test scenario: Image, shapes in the same Layer, transform the layer. ensure the drag is still correct</div>
+
+<div id = 'XIEWrapper' style="background-color: aquamarine;"></div>
+
+<div  style="background-color: grey">
+
+    <button id="rotate">rotate Layer +90</button>
+    <button id="scaleX2">scale x2</button>
+</div>
+<div id = 'infoDiv2' style="background-color: grey">
+
+</div>
+
+
+
+<script>
+
+
+
+
+
+
+    var infoDiv = document.getElementById('infoDiv2');
+
+    Imports.LoadInOrder('../../',function(){
+
+        if(XIE){
+
+            var stage = new  XIE.Stage({
+                wrapper: 'XIEWrapper',
+                width: 800,
+                height: 600
+            });
+
+
+
+
+
+            var layerPic = new XIE.Layer({
+                x:400,
+                y:300,
+                offsetX:-300,
+                offsetY:-200,
+                draggable: true
+
+
+            });
+
+
+            stage.add(layerPic);
+
+
+
+
+
+            var imageObj = new Image();
+
+            imageObj.src = '../../_examples/img/16bitImg.png';
+
+            imageObj.onload = function(){
+                var xImage = new XIE.Image({
+                            width: 600,
+                            height:400,
+                            /* draggable:true,
+                             enlargeable:true,*/
+                            image: imageObj
+                        }),
+
+                        center = new XIE.Circle({
+                            x: 400,
+                            y:300,
+                            radius:5,
+                            stroke:'orange',
+                            fill:'red',
+                            draggable:true,
+                            enlargeable:true
+                        }),
+
+                        circle = new XIE.Circle({
+                            x: 400,
+                            y:300,
+                            radius:50,
+                            stroke:'orange',
+                            draggable:true,
+                            onDragging:function(event){
+                                infoDiv.innerHTML= 'x:' + event.x + ' y:'+event.y;
+                            },
+                            enlargeable:true
+                        });
+
+
+
+
+                layerPic.add(xImage);
+                layerPic.add(center);
+                layerPic.add(circle);
+
+
+                stage.draw();
+
+
+                stage.on('mousemove',function(evt){
+                    if(evt.target && evt.target instanceof XIE.Shape){
+                        if(evt.target.isAtEdge({x:evt.x, y:evt.y}) ){
+                            stage.getWrapper().style.cursor="crosshair";
+                        }else{
+                            stage.getWrapper().style.cursor="pointer";
+                        }
+
+                    }else{
+                        stage.getWrapper().style.cursor="default";
+                    }
+                });
+
+
+                var degree4Image = 0;
+                document.getElementById('rotate').addEventListener('click', function(){
+                    // force degree not beyond 360
+                    degree4Image = degree4Image>360? ((degree4Image = degree4Image-360), degree4Image) : degree4Image;
+                    degree4Image = degree4Image + 90;
+
+                    layerPic.rotate(degree4Image);
+                    layerPic.draw();
+                });
+
+
+                var scale =1;
+                document.getElementById('scaleX2').addEventListener('click', function(){
+                    scale =scale+0.5;
+                    layerPic.scale( scale);
+                    layerPic.draw();
+                });
+
+
+            };
+
+
+        }
+
+    });
+
+
+
+
+
+</script>
+
+
+</body>
+</html>
