@@ -1,4 +1,4 @@
-[TOC]
+https://tommyxu1983.github.io/xImagEditor/
 # XIE -- eXpress Image Editor
 
 ## 项目由来
