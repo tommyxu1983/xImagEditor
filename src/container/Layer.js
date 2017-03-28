@@ -250,17 +250,6 @@
         singlePixel = context_hitCanvas.getImageData(x,y, 1,1).data;
         p3 = singlePixel[3];
         // fully opaque pixel
-        if(x==192 && y==197){
-            XIE.cache.singleContext = context_hitCanvas;
-        }
-
-        if (XIE.cache.singleContext === context_hitCanvas){
-            console.log('context equal')
-        }else{
-            console.log('context not equal')
-        }
-
-
         if(p3 === 255) {
             colorKey = utils._rgbToHex(singlePixel[0], singlePixel[1], singlePixel[2]);
             shape = XIE.cache.shapes['#' + colorKey];

@@ -148,7 +148,7 @@
 
             var imageObj = new Image();
 
-            imageObj.src = '../../_examples/img/16bitRG.bmp';
+            imageObj.src = '../../playground/img/16bitRG.bmp';
 
             imageObj.onload = function(){
                 var xImage = new XIE.Image16bit({
@@ -167,10 +167,10 @@
                 xImage.addFilters([XIE.Filters.Brighten,XIE.Filters.ContrastTo]);
 
                 layerPic.add(xImage);
-             /*   layerShape.add(rectGreen);
+                layerShape.add(rectGreen);
                 layerShape.add(rectOrange);
                 layerPubSelf.add(rectBlue);
-                drawShapeLayer.add(cShape);*/
+                drawShapeLayer.add(cShape);
                 stage.draw();
 
 
