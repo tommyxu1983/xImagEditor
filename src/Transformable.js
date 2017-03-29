@@ -122,9 +122,8 @@
 
         // transform matrix including ancestor's transform matrix
         getAncestorsM: function(){
-            var ancestorsM = [1,0,0,1,0,0],
+            var ancestorsM = matrix.identity(),
                 parent = this.parent;
-
             while(parent){
                 ancestorsM = matrix.mul(ancestorsM, parent.getSelfM() );
                 parent = parent.parent;
@@ -132,55 +131,80 @@
             return ancestorsM;
         },
 
+        getAbsoluteOriginM: function(){
+
+            return this.getAncestorsM();
+
+        },
+
         getAbsoluteOrigin:function(){
             var position = {x:0, y:0}, finalM;
 
-           /* while(parent){
-                position.x += parent.attr.x +parent.attr.offsetX+parent.transform.offsetX+ parent.transform.x;
-                position.y += parent.attr.y +parent.attr.offsetY +parent.transform.offsetY+parent.transform.y;
-                parent = parent.parent;
-            }*/
+            /* while(parent){
+             position.x += parent.attr.x +parent.attr.offsetX+parent.transform.offsetX+ parent.transform.x;
+             position.y += parent.attr.y +parent.attr.offsetY +parent.transform.offsetY+parent.transform.y;
+             parent = parent.parent;
+             }*/
             finalM = matrix.mul(this.getAncestorsM(),this.getSelfM());
 
             return matrix.transformXY(finalM, position);
 
         },
 
- /*       getAbsoluteM: function(){
-            var  m = this.getSelfM(),
-                ancestorM = this.getAncestorsM();
-            m= matrix.mul(m, ancestorM );
-            return m;
-        },*/
+        /*       getAbsoluteM: function(){
+         var  m = this.getSelfM(),
+         ancestorM = this.getAncestorsM();
+         m= matrix.mul(m, ancestorM );
+         return m;
+         },*/
 
         // self's transform
         getSelfM: function(){
-
-            var finalM;
-
-            /* var shiftM = _getShiftM.call(this),
-                rotateM =_getRotationM.call(this),
-                scaleM = _getScaleM.call(this);*/
-          //  var shiftM = [1,0,0,1,(this.transform.x + this.attr.x +this.transform.offsetX + this.attr.offsetX),(this.transform.y +this.attr.y + this.transform.offsetY +this.attr.offsetY)];
-
-            var radian = (this.transform.rotate + this.attr.rotate)*Math.PI/180,
-            rotateM = [Math.cos(radian), Math.sin(radian),-Math.sin(radian),Math.cos(radian),0,0];
-
-           // var scaleM =[( this.transform.scaleX * this.attr.scaleX),0,0,(this.transform.scaleY * this.attr.scaleY),0,0];
-
-            var shiftM_x_scaleM = [( this.transform.scaleX * this.attr.scaleX),0,0,(this.transform.scaleY * this.attr.scaleY),(this.transform.x + this.attr.x +this.transform.offsetX + this.attr.offsetX),(this.transform.y +this.attr.y + this.transform.offsetY +this.attr.offsetY)];
-
-
-            //console.time('getSelfM');
-
-
-            finalM = matrix.mul(shiftM_x_scaleM,rotateM);
-          //  console.timeEnd('getSelfM');
+            console.time('getSelfM');
+            /*   console.time('0');*/
+            var scaleM = this.getM(_getScale),
+                offsetM = this.getM(_getOffset),
+                rotateM = this.getM(_getRotation),
+                originM = this.getM(_getOrigin),
+                finalM = matrix.identity();
+            /*      console.timeEnd('0');
+             console.time('1');*/
+            finalM = matrix.mul(finalM,originM);
+            finalM = matrix.mul(finalM,scaleM);
+            finalM = matrix.mul(finalM,rotateM);
+            finalM = matrix.mul(finalM,offsetM);
+            /*         console.timeEnd('1');*/
+            console.timeEnd('getSelfM');
             return finalM;
         },
 
 
-
+        getM:function(getFn){
+            var para4M = getFn.call(this);
+            var m=matrix.identity();
+            switch(getFn.name){
+                case '_getOrigin':
+                    m= [1,0,0,1,para4M.x,para4M.y];
+                    return m;
+                    break;
+                case '_getScale':
+                    m= [para4M.x,0,0,para4M.y,0,0];
+                    return m;
+                    break;
+                case '_getOffset':
+                    m= [1,0,0,1,para4M.x,para4M.y];
+                    return m;
+                    break;
+                case '_getRotation':
+                    var cos=Math.cos,
+                        sin=Math.sin,
+                        radian = para4M*Math.PI/180,
+                        m =  [cos(radian), sin(radian),-sin(radian),cos(radian),0,0];
+                    return m;
+                    break;
+            }
+            return m;
+        },
 
         /**
          *
@@ -188,7 +212,7 @@
          * @param y: {number} stage's y
          */
         translate2LocalXY: function(x, y){
-            var originM = this.getAncestorsM(),
+            var originM = this.getAbsoluteOriginM(),
                 transformM =this.getSelfM(), invertM;
             transformM = matrix.mul(originM, transformM);
 
@@ -198,7 +222,6 @@
         },
 
     };
-
 
     function _setToInit(){
         // this = element;
@@ -211,30 +234,26 @@
         this.transform.rotate=0;
     }
 
-/*    function _getShiftM(){
-        var x = this.transform.x + this.attr.x +this.transform.offsetX + this.attr.offsetX;
-        var y =  this.transform.y +this.attr.y + this.transform.offsetY +this.attr.offsetY;
-        return [1,0,0,1,x,y];
-    }
-
-
-
-
-    function _getRotationM(){
-
-        var cos=Math.cos,
-            sin=Math.sin,
-            rotation =this.transform.rotate + this.attr.rotate,
-            radian = rotation*Math.PI/180;
-            return [cos(radian), sin(radian),-sin(radian),cos(radian),0,0];
+    function _getOrigin(){
+        var oX= this.transform.x + this.attr.x,
+            oY= this.transform.y +this.attr.y;
+        return {x:oX,y:oY };
 
     }
+    function _getOffset(){
+        var oX= this.transform.offsetX + this.attr.offsetX,
+            oY= this.transform.offsetY +this.attr.offsetY;
+        return {x:oX,y:oY };
+    }
+    function _getRotation(){
+        return this.transform.rotate + this.attr.rotate;
+    }
 
-    function _getScaleM() {
-        var x = this.transform.scaleX * this.attr.scaleX,
-            y = this.transform.scaleY * this.attr.scaleY;
-        return [x,0,0,y,0,0];
-    }*/
+    function _getScale() {
+        var oX= this.transform.scaleX * this.attr.scaleX,
+            oY= this.transform.scaleY * this.attr.scaleY;
+        return {x:oX,y:oY };
+    }
 
     //private function End
 

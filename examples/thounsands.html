@@ -25,23 +25,16 @@
 
 <script>
     var infoDiv1 = document.getElementById('infoDiv1');
+    var xieWrap =  document.getElementById('XIEWrapper');
     if(! XIE){   alert('XIE 没有加载正确');     }
 
     var stageWidth = 900, stageHeight = 600;
 
     var stage = new  XIE.Stage({
-        wrapper: 'XIEWrapper',
+        wrapper: xieWrap,
         width: stageWidth,
         height: stageHeight
     });
-
-
-
-
-
-
- //var kk =0;
-
 
 </script>
 
@@ -51,7 +44,7 @@
         var  circle = new XIE.Circle({
             x: attr.x,
             y: attr.y,
-            radius: 5,
+            radius: 7,
             fill: attr.color,
             id: attr.id,
             draggable: true
@@ -61,7 +54,7 @@
     }
     var colors = ['red', 'orange', 'cyan', 'green', 'blue', 'purple'], data =[];
 
-    for(var n = 0; n < 2500; n++) {
+    for(var n = 0; n < 2000; n++) {
         var x = Math.random() * stageWidth;
         var y = stageHeight + (Math.random() * 200) - 100 + (stageHeight / stageWidth) * -1 * x;
         data.push({
@@ -79,11 +72,11 @@
     var layerNumber = 0;
     var layer = new XIE.Layer();
     console.time('layer_'+ 0);
-    console.time('layer_'+ layerNumber);
+   // console.time('layer_'+ layerNumber);
     for(var n = 0; n < data.length; n++) {
         addCircle(data[n], layer);
         nodeCount++;
-        if(nodeCount >= 100) {
+        if(nodeCount >= 150) {
 
             // console.timeEnd('layer_'+ layerNumber);
             layerNumber ++;
@@ -97,11 +90,12 @@
 
         }
     }
-     console.timeEnd('layer_'+ layerNumber);
+    //console.timeEnd('layer_'+ layerNumber);
     console.timeEnd('layer_'+ 0);
     stage.add(dragLayer);
     var oldLayer;
     stage.on('mousedown',function(evt){
+
         if(evt.target && evt.target instanceof XIE.Shape){
 
             infoDiv1.innerHTML = evt.target.attr.id;
@@ -113,7 +107,14 @@
             dragLayer.draw();
         }
 
+    });
 
+    stage.on('mousemove', function(evt){
+        if(evt.target && evt.target instanceof XIE.Shape){
+            stage.getWrapper().style.cursor="pointer";
+        }else{
+            stage.getWrapper().style.cursor="default";
+        }
     });
 
     stage.on('mouseup',function(evt){

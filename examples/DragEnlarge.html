@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script type="text/javascript" src="../dist/js/XIEGlobal.js"></script>
+
+
+    <style>
+
+    </style>
+</head>
+<body style="background-color: #644732">
+<div  style="line-height:2em; margin: 0 auto 0 auto; width: 900px; color: antiquewhite;">
+    你正在拖动，<span style="display: inline-block" id = 'infoDiv1'></span>
+</div>
+
+
+<div id = 'XIEWrapper' style="margin: 0 auto 0 auto; width: 900px;"></div>
+
+<!--style="background-color: aquamarine;"-->
+
+
+
+<script>
+    var infoDiv1 = document.getElementById('infoDiv1');
+    var xieWrap =  document.getElementById('XIEWrapper');
+    if(! XIE){   alert('XIE 没有加载正确');     }
+
+    var stageWidth = 900, stageHeight = 600;
+
+    var stage = new  XIE.Stage({
+        wrapper: xieWrap,
+        width: stageWidth,
+        height: stageHeight
+    });
+
+</script>
+
+<script>
+    var layer = new XIE.Layer({});
+    var  circle = new XIE.Circle({
+        x: 400,
+        y:300,
+        radius:50,
+        stroke:'orange',
+        draggable:true,
+        onDragging:function(event){
+            infoDiv1.innerHTML= 'x:' + event.x + ' y:'+event.y;
+        },
+
+       enlargeable:true
+    });
+   var  movingRect = new XIE.Rect({
+                x: 400,
+                y:300,
+                width:200,
+                height:100,
+                fill:'green',
+                stroke:'black',
+                draggable: true,
+                enlargeable:true,
+       onDragging:function(event){
+           infoDiv1.innerHTML= 'x:' + event.x + ' y:'+event.y;
+       }
+
+   });
+
+    stage.on('mousemove',function(evt){
+        if(evt.target && evt.target instanceof XIE.Shape){
+            if(evt.target.isAtEdge({x:evt.x, y:evt.y}) ){
+                stage.getWrapper().style.cursor="crosshair";
+            }else{
+                stage.getWrapper().style.cursor="pointer";
+            }
+
+        }else{
+            stage.getWrapper().style.cursor="default";
+        }
+    });
+
+    layer.add(circle,movingRect);
+    stage.add(layer);
+
+    stage.draw();
+
+</script>
+</body>
+</html>

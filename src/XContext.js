@@ -83,7 +83,7 @@
 
 
         drawShape: function(shape){
-            var originM = shape.getAncestorsM();
+            var originM = shape.getAbsoluteOriginM();
             var transformM =shape.getSelfM();
 
             this.setTransform(originM[0],originM[1],originM[2],originM[3],originM[4],originM[5]);
