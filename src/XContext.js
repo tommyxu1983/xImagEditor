@@ -83,16 +83,15 @@
 
 
         drawShape: function(shape){
-            var originM = shape.getAbsoluteOriginM(),
-                transformM =shape.getSelfM();
+            var originM = shape.getAncestorsM();
+            var transformM =shape.getSelfM();
 
             this.setTransform(originM[0],originM[1],originM[2],originM[3],originM[4],originM[5]);
+
             this.transform(transformM[0],transformM[1],transformM[2],transformM[3],transformM[4],transformM[5]);
-
             shape.drawFunc(this);
-            this.applyFilter(shape);
+             //this.applyFilter(shape);
             this.setTransform(1,0,0,1,0,0);
-
         },
 
         applyFilter:function(shape){

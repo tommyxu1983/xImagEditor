@@ -35,12 +35,10 @@
 
         drawView:function(xCanvas){
             var xContext =  xCanvas.getXContext();
-                //imageData, shape= this;
             xContext.save();
             // this 是Shape子类的实例， xContext.drawShape 里一般调用的是子类的 drawFunc
+
             xContext.drawShape(this);
-
-
 
             xContext.restore();
             return this;

@@ -189,15 +189,15 @@
            };
        },
 
-
-        /**
+/*
+        /!**
          * Keeps track of the current mouse position, relative to an element.
          * 监视鼠标相对于页面上一个元素体内的位置（ 相当于 width, height 矩形里的位置。原点始于内容开始的左上角），返回x,y
          * @param {HTMLElement} element
          * @return {object} Contains properties: x, y, event
          *
          * todo: how to remove 'mousemove' event after this method has been called, pass a callback fn?
-         */
+         *!/
         captureMouse : function(element){
 
             var mouse = {x:0, y:0, event: null},
@@ -231,7 +231,7 @@
                 mouse.event = event;
             }
             return mouse;
-        },
+        },*/
 
         /**
          * Keeps track of the current mouse position, relative to an element.
@@ -267,8 +267,8 @@
                 return null;
             }
 
-            mouse.x -= element.getBoundingClientRect().left;
-            mouse.y -= element.getBoundingClientRect().top;
+            mouse.x = mouse.x - element.getBoundingClientRect().left - body_scrollLeft- html_scrollLeft;
+            mouse.y = mouse.y - element.getBoundingClientRect().top - body_scrollTop - html_scrollTop;
             /*mouse.event = event;*/
             /*console.log('x: '+mouse.x + 'y: '+ mouse.y);*/
             return mouse;
@@ -289,7 +289,7 @@
 
 
 
-})(XIE) ;
+})(XIE);
 
 
 /**
@@ -816,19 +816,14 @@
 
         // transform matrix including ancestor's transform matrix
         getAncestorsM: function(){
-            var ancestorsM = matrix.identity(),
+            var ancestorsM = [1,0,0,1,0,0],
                 parent = this.parent;
+
             while(parent){
                 ancestorsM = matrix.mul(ancestorsM, parent.getSelfM() );
                 parent = parent.parent;
             }
             return ancestorsM;
-        },
-
-        getAbsoluteOriginM: function(){
-
-           return this.getAncestorsM();
-
         },
 
         getAbsoluteOrigin:function(){
@@ -854,96 +849,32 @@
 
         // self's transform
         getSelfM: function(){
-            var scaleM = this.getM(_getScale),
-                offsetM = this.getM(_getOffset),
-                rotateM = this.getM(_getRotation),
-                originM = this.getM(_getOrigin),
-                finalM = matrix.identity();
 
-            finalM = matrix.mul(finalM,originM);
-            finalM = matrix.mul(finalM,scaleM);
-            finalM = matrix.mul(finalM,rotateM);
-            finalM = matrix.mul(finalM,offsetM);
+            var finalM;
+
+            /* var shiftM = _getShiftM.call(this),
+                rotateM =_getRotationM.call(this),
+                scaleM = _getScaleM.call(this);*/
+          //  var shiftM = [1,0,0,1,(this.transform.x + this.attr.x +this.transform.offsetX + this.attr.offsetX),(this.transform.y +this.attr.y + this.transform.offsetY +this.attr.offsetY)];
+
+            var radian = (this.transform.rotate + this.attr.rotate)*Math.PI/180,
+            rotateM = [Math.cos(radian), Math.sin(radian),-Math.sin(radian),Math.cos(radian),0,0];
+
+           // var scaleM =[( this.transform.scaleX * this.attr.scaleX),0,0,(this.transform.scaleY * this.attr.scaleY),0,0];
+
+            var shiftM_x_scaleM = [( this.transform.scaleX * this.attr.scaleX),0,0,(this.transform.scaleY * this.attr.scaleY),(this.transform.x + this.attr.x +this.transform.offsetX + this.attr.offsetX),(this.transform.y +this.attr.y + this.transform.offsetY +this.attr.offsetY)];
+
+
+            //console.time('getSelfM');
+
+
+            finalM = matrix.mul(shiftM_x_scaleM,rotateM);
+          //  console.timeEnd('getSelfM');
             return finalM;
         },
 
-/*
-         getM: function(){
-             var scaleM = this.getScaleM(),
-             getOffsetM = this.getOffsetM(),
-             rotateM = this.getRotateM(),
-             finalM = matrix.identity();
-
-             finalM = matrix.mul(finalM,scaleM);
-             finalM = matrix.mul(finalM,rotateM);
-             finalM = matrix.mul(finalM,getOffsetM);
-             return finalM;
-         },
 
 
-        getScaleM: function(){
-            var scaleX= this.transform.scaleX,
-                scaleY= this.transform.scaleY,
-                m= [scaleX,0,0,scaleY,0,0];
-            return m;
-        },
-
-        getOriginM: function(){
-            var transX= this.transform.x,
-                transY= this.transform.y,
-                 m= [1,0,0,1,transX,transY];
-                return m;
-        },
-
-
-        getOffsetM: function(){
-            var transX= this.transform.offsetX,
-                transY= this.transform.offsetY,
-                m= [1,0,0,1,transX,transY];
-            return m;
-        },
-
-        getRotateM: function(){
-
-            // this.rotate is on degree : 0-360
-
-            var cos=Math.cos,
-                sin=Math.sin,
-                radian = this.transform.rotate*Math.PI/180,
-                m =  [cos(radian), sin(radian),-sin(radian),cos(radian),0,0];
-
-            return m;
-
-        },*/
-
-
-
-        getM:function(getFn){
-            var para4M = getFn.call(this);
-            var m=matrix.identity();
-            switch(getFn.name){
-                case '_getOrigin':
-                    m= [1,0,0,1,para4M.x,para4M.y];
-                    return m;
-                    break;
-                case '_getScale':
-                    m= [para4M.x,0,0,para4M.y,0,0];
-                    return m;
-                    break;
-                case '_getOffset':
-                    m= [1,0,0,1,para4M.x,para4M.y];
-                    return m;
-                    break;
-                case '_getRotation':
-                    var cos=Math.cos,
-                        sin=Math.sin,
-                        radian = para4M*Math.PI/180,
-                        m =  [cos(radian), sin(radian),-sin(radian),cos(radian),0,0];
-                    return m;
-                    break;
-            }
-            return m;
-        },
 
         /**
          *
@@ -951,7 +882,7 @@
          * @param y: {number} stage's y
          */
         translate2LocalXY: function(x, y){
-            var originM = this.getAbsoluteOriginM(),
+            var originM = this.getAncestorsM(),
                 transformM =this.getSelfM(), invertM;
             transformM = matrix.mul(originM, transformM);
 
@@ -962,30 +893,7 @@
 
     };
 
-    //private function Start
-    /* function init(config){
-       var conf = config || {};
 
-        // x, y  is the origin (x,y) user wanna be
-        this.transform.x = utils.isNumber(conf.x) ?   Math.round(conf.x) : 0 ;
-        this.transform.y = utils.isNumber(conf.y) ?   Math.round(conf.y) : 0 ;
-
-        this.transform.offsetX = utils.isNumber(conf.offsetX) ?   Math.round(conf.offsetX) : 0 ;
-        this.transform.offsetY = utils.isNumber(conf.offsetY) ?   Math.round(conf.offsetY) : 0 ;
-        //rotation in degree
-        this.transform.rotate= utils.isNumber(conf.rotate) ?  conf.rotate : 0 ;
-
-        if( conf.scale ){
-            this.transform.scaleX =this.transform.scaleY= utils.isNumber(conf.scale) ?  conf.scale : 1 ;
-        }else{
-            this.transform.scaleX = utils.isNumber(conf.scaleX) ?   conf.scaleX : 1 ;
-            this.transform.scaleY = utils.isNumber(conf.scaleY) ?   conf.scaleY : 1 ;
-        }
-
-
-
-
-    }*/
     function _setToInit(){
         // this = element;
         this.transform.x = 0;
@@ -997,26 +905,30 @@
         this.transform.rotate=0;
     }
 
-    function _getOrigin(){
-        var oX= this.transform.x + this.attr.x,
-            oY= this.transform.y +this.attr.y;
-        return {x:oX,y:oY };
-
-    }
-    function _getOffset(){
-        var oX= this.transform.offsetX + this.attr.offsetX,
-            oY= this.transform.offsetY +this.attr.offsetY;
-        return {x:oX,y:oY };
-    }
-    function _getRotation(){
-        return this.transform.rotate + this.attr.rotate;
+/*    function _getShiftM(){
+        var x = this.transform.x + this.attr.x +this.transform.offsetX + this.attr.offsetX;
+        var y =  this.transform.y +this.attr.y + this.transform.offsetY +this.attr.offsetY;
+        return [1,0,0,1,x,y];
     }
 
-    function _getScale() {
-        var oX= this.transform.scaleX * this.attr.scaleX,
-            oY= this.transform.scaleY * this.attr.scaleY;
-        return {x:oX,y:oY };
+
+
+
+    function _getRotationM(){
+
+        var cos=Math.cos,
+            sin=Math.sin,
+            rotation =this.transform.rotate + this.attr.rotate,
+            radian = rotation*Math.PI/180;
+            return [cos(radian), sin(radian),-sin(radian),cos(radian),0,0];
+
     }
+
+    function _getScaleM() {
+        var x = this.transform.scaleX * this.attr.scaleX,
+            y = this.transform.scaleY * this.attr.scaleY;
+        return [x,0,0,y,0,0];
+    }*/
 
     //private function End
 
@@ -1043,7 +955,7 @@
             return new Date().getTime();
         };
     })();
-
+    var window = window || {};
     (function() {
         var lastTime = 0;
         var vendors = ['webkit', 'moz'];
@@ -1615,6 +1527,13 @@
             //if this == stage, return undefined;
         },
 
+        /**
+         * check is this element's ancestor
+         * @method
+         * @param {object}
+         * @memberof XIE.Element.prototype
+         * @returns {XIE.Layer} layer
+         */
         getStage: function(){
             // stage在最顶端
             var parent = this.parent;
@@ -1642,12 +1561,14 @@
                 if(parent === ancestor){
                     return true;
                 }else{
-                    parent = this.parent;
+                    parent = parent.parent;
                 }
+
             }
 
             return false;
         },
+
         /**
          * check is this element's ancestor
          * @method
@@ -1691,7 +1612,7 @@
          *  set/get contrast of element.
          * @method
          * @memberof XIE.Element.prototype
-         * @returns {number} brightness
+         * @returns {number} contrast
          */
         contrast: function(){
             if(arguments.length===0){
@@ -1701,7 +1622,6 @@
             }
 
         },
-
 
         /**
          * laod filters into elements.
@@ -1713,28 +1633,32 @@
          */
 
         addFilters:function(arrFilters){
-            for(var i = 0, l= arrFilters.length; i<l; i++){
-               /* if(utils.isFunction(arrFilters[i]) && ! this.filters.hasOwnProperty(arrFilters[i].name) ){
+            if(utils.isArray(arrFilters)){
+                for(var i = 0, l= arrFilters.length; i<l; i++){
+                   /* if(utils.isFunction(arrFilters[i]) && ! this.filters.hasOwnProperty(arrFilters[i].name) ){
 
-                    this.filters[arrFilters[i].name]=utils.curry(this,arrFilters[i]);
-                }*/
-                if( utils.isFunction(arrFilters[i]) ){
-                    var hasIt = this.filters.some(function(item){return item.name === arrFilters[i]; });
-                   if(! hasIt){
-                       this.filters.push(arrFilters[i]);
-                   }
+                        this.filters[arrFilters[i].name]=utils.curry(this,arrFilters[i]);
+                    }*/
+                    if( utils.isFunction(arrFilters[i]) ){
+                        var hasIt = this.filters.some(function(item){return item === arrFilters[i]; });
+                       if(! hasIt){
+                           this.filters.push(arrFilters[i]);
+                       }
+
+                    }
 
                 }
-
+            }else{
+                throw new Error('addFilters expect a array, wrong argument')
             }
 
-            return this;
+            return this.filters;
         },
 
-        getStage:function(){
+      /*  getStage:function(){
             throw new Error('abstract method need to be implement be use');
         },
-
+*/
     };
 
     utils.extendProto(Element,evtProxy);
@@ -1885,10 +1809,12 @@
         add : function(child){
             var children;
             if(arguments.length >1 ){
+
                 for(var i = 0, l=arguments.length; i<l; i++){
                     // recursive calls to addToDD child one by one
                     this.add(arguments[i]);
                 }
+
                 return this;
             }
             /**
@@ -1909,8 +1835,7 @@
 
             // attach Drag & drop event to stage
             _addDragEvtToStage.call(this,child);
-
-
+            return this.children;
             /**
              * Todo: trigger 'addToDD' events
              *  this.trigger('addToDD', {child:child});
@@ -1926,6 +1851,7 @@
                     throw new Error('you need to implement <' + subInstance.className + '>\'s _validateAdd for subclass of Container');
                 }
             }
+
         },
 
         remove : function(child){
@@ -1934,8 +1860,10 @@
             for(var i =0; i<childrenLen; i++){
                 if( child === children[i]){
                     this.children.splice(i,1); //第 i 个，向后删除1个
+                    child.parent=null;
                 }
             }
+            return this.children;
         },
 
         drawView: function(canvas, top, caching){
@@ -1944,7 +1872,6 @@
                 viewCanvas = canvas || ( layer && canvas.getViewCanvas() );
 
             //todo: isVisible
-
             this._drawChildren(viewCanvas, 'drawView');
 
         },
@@ -1960,7 +1887,6 @@
                 child[drawViewOrHit](xCanvas);
             });
         },
-
     };
 
     utils.inheritProto(Container, Element);
@@ -2108,24 +2034,20 @@
 
 
         drawShape: function(shape){
-            var originM = shape.getAbsoluteOriginM(),
-                transformM =shape.getSelfM();
+            var originM = shape.getAncestorsM();
+            var transformM =shape.getSelfM();
 
             this.setTransform(originM[0],originM[1],originM[2],originM[3],originM[4],originM[5]);
-         /*   transformM = XIE.matrix.mul(originM, transformM);*/
+
             this.transform(transformM[0],transformM[1],transformM[2],transformM[3],transformM[4],transformM[5]);
-
             shape.drawFunc(this);
-            //todo: 有可能造成严重性能问题
-            this.applyFilter(shape);
-
+             //this.applyFilter(shape);
             this.setTransform(1,0,0,1,0,0);
-
         },
 
         applyFilter:function(shape){
 
-            //todo 想想做一个 canvas buffer ，不用每次调用都要
+            //todo 有可能造成严重性能问题，做一个 image buffer？ 提高性能
             var imageData;
             if( utils.isArray(shape.filters) ){
 
@@ -2273,8 +2195,6 @@
 
 
     // private function start
-
-
     // private function End
 
 
@@ -2521,7 +2441,6 @@
               * */
               viewCanvas.getXContext().clear();
               Container.prototype.drawView.call(this,viewCanvas, top);
-
               return this;
 
         },
@@ -2669,7 +2588,7 @@
         _validateAdd: function(child) {
             var type = child.type;
             if (/*type !== 'Group' &&*/ type !== 'shape') {
-                throw new Error('you may only addToDD Groups or Shapes to a layer');
+                throw new Error('you may only add Shapes to a layer');
             }
         },
 
@@ -2684,12 +2603,17 @@
     function _getIntersection (position){
         var layer = this,
             ratio = layer.hitCanvas.pixelRatio|| 1,
-            p = layer.hitCanvas.xContext.$context.getImageData(Math.round(position.x * ratio), Math.round(position.y * ratio),1,1).data,
-            p3 = p[3],
-            colorKey, shape;
+            x = Math.round(position.x * ratio),
+            y = Math.round(position.y * ratio),
+            context_hitCanvas = layer.hitCanvas.xContext.$context,
+            singlePixel, p3, colorKey, shape;
+
+        //layer.parent.$content.appendChild(layer.hitCanvas.$canvas);
+        singlePixel = context_hitCanvas.getImageData(x,y, 1,1).data;
+        p3 = singlePixel[3];
         // fully opaque pixel
         if(p3 === 255) {
-            colorKey = utils._rgbToHex(p[0], p[1], p[2]);
+            colorKey = utils._rgbToHex(singlePixel[0], singlePixel[1], singlePixel[2]);
             shape = XIE.cache.shapes['#' + colorKey];
             if (shape) {
                 return {
@@ -2775,9 +2699,10 @@
             var contentDiv;
             if(arguments.length > 1){
                 for(var i = 0; i <arguments.length; i++){
+                    //invoke element.add
                     this.add.call(this,arguments[i]);
                 }
-                return this;
+                return this.children;
             }
 
             Container.prototype.add.call(this,layer);
@@ -2788,7 +2713,7 @@
             contentDiv = this.getContentDiv();
             contentDiv.appendChild(layer.viewCanvas.$canvas);
 
-            return this;
+            return this.children;
 
         },
 
@@ -2832,6 +2757,7 @@
             for(var i=0, l = children.length; i<l; i++){
                 children[i].draw();
             }
+            return this;
         },
 
         /**
@@ -2911,8 +2837,8 @@
 
         //被父类 Container.prototype.addToDD 里调用
         _validateAdd: function(child) {
-            if ( child.className !== 'layer') {
-                throw new Error('you may only addToDD Groups or Shapes to a layer');
+            if ( child.className !== 'layer' ) {
+                throw new Error('you may only add layer to a stage');
             }
         },
 
@@ -3115,12 +3041,10 @@
 
         drawView:function(xCanvas){
             var xContext =  xCanvas.getXContext();
-                //imageData, shape= this;
             xContext.save();
             // this 是Shape子类的实例， xContext.drawShape 里一般调用的是子类的 drawFunc
+
             xContext.drawShape(this);
-
-
 
             xContext.restore();
             return this;
@@ -3142,15 +3066,13 @@
             while(parent){
                 if(parent instanceof XIE.Layer){
                     parent.draw();
-                    return;
+                    return this;
                 }else{
                     parent = parent.parent;
                 }
-
-
             }
 
-            throw new Error('shape needed to addToDD in to a layer before draw');
+            throw new Error('shape needed to add in to a layer before draw');
 
         },
 

@@ -163,6 +163,7 @@ Imports.LoadInOrder('../../', function(){
         });
 
         describe('stage', function(){
+
            it('draw',function(){
                stage.remove(layer);
                layer.remove(circle);
@@ -171,6 +172,7 @@ Imports.LoadInOrder('../../', function(){
                layer.add(circle); //add back for further test case
 
            });
+
 
            it('add',function(){
                expect(stage.children).to.include(layer);
@@ -199,10 +201,7 @@ Imports.LoadInOrder('../../', function(){
                layer.add(circle); //add back for further test case
            });
 
-          /*  it('getIntersection',function(){
-                  expect(circle.draw()).to.be.equal(circle);
 
-            });*/
 
 
 

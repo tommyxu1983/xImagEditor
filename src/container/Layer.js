@@ -78,7 +78,6 @@
               * */
               viewCanvas.getXContext().clear();
               Container.prototype.drawView.call(this,viewCanvas, top);
-
               return this;
 
         },

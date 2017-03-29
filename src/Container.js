@@ -41,10 +41,12 @@
         add : function(child){
             var children;
             if(arguments.length >1 ){
+
                 for(var i = 0, l=arguments.length; i<l; i++){
                     // recursive calls to addToDD child one by one
                     this.add(arguments[i]);
                 }
+
                 return this;
             }
             /**
@@ -65,7 +67,6 @@
 
             // attach Drag & drop event to stage
             _addDragEvtToStage.call(this,child);
-
             return this.children;
             /**
              * Todo: trigger 'addToDD' events
@@ -82,6 +83,7 @@
                     throw new Error('you need to implement <' + subInstance.className + '>\'s _validateAdd for subclass of Container');
                 }
             }
+
         },
 
         remove : function(child){
@@ -102,7 +104,6 @@
                 viewCanvas = canvas || ( layer && canvas.getViewCanvas() );
 
             //todo: isVisible
-
             this._drawChildren(viewCanvas, 'drawView');
 
         },
@@ -118,7 +119,6 @@
                 child[drawViewOrHit](xCanvas);
             });
         },
-
     };
 
     utils.inheritProto(Container, Element);
