@@ -1,15 +1,7 @@
 var gulp = require('gulp');
-
 var fs = require('fs');
 var replace = require('gulp-replace-task');
 
-
-
-/*var watchify = require('watchify');
-var browserify  = require('browserify');
-var source = require('vinyl-source-stream');
-var buffer = require('vinyl-buffer');
-var sass = require('gulp-sass');*/
 var	uglify = require('gulp-uglify');
 var jshint = require('gulp-jshint');
 var concat = require('gulp-concat');
@@ -42,7 +34,7 @@ var files = [
 ];
 
 
-var version = '0.02';
+//var version = '0.02';
 gulp.task('concat',function(){
 
 	return	gulp.src(files)
@@ -63,39 +55,3 @@ gulp.task('build', ['concat'],function(){
 		.pipe(gulp.dest('dist/js'))
 });
 
-/*gulp.task('default',['build'],function(){
-	
-});*/
-
-
-
-
-
-
-
-/*	gulp.task('scss',function(){
- return gulp.src('./style/!**!/!*.scss')
- .pipe(sass())
- .pipe(gulp.dest('dist/css'))
- });*/
-
-
-/*gulp.task('jshint', function(){
-
- });*/
-
-/*
-
-gulp.task("browserify", function () {
-	var b = browserify({
-		entries: "_src/helpers/moduleCore.js",
-		debug: true
-	});
-
-	return b.bundle()
-		.pipe(source("moduleExample.js"))
-		.pipe(buffer())
-/!*		.pipe(source.init({loadMaps: true}))
-		.pipe(source.write("."))*!/
-		.pipe(gulp.dest("./dist/build"));
-});*/

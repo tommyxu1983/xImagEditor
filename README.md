@@ -1,5 +1,6 @@
 
 [project home page](https://tommyxu1983.github.io/xImagEditor/)
+
 [transform example](examples/src/Transform.html)
 
 # XIE -- eXpress Image Editor
@@ -78,7 +79,7 @@ __未完成__
 * Shape （图形，图片）：来实现具体某个图形和图片，比如，圆形，三角形，矩形，图片。
 
 ### XIE的模块大致可以分为下面几种：
-* helpers(通用模块) 图像处理无太大的关系：
+* 通用模块 `./helpers` 图像处理无太大的关系：
     * Utils.js: 各种 isXX系列判断, extend, inherit prototype, hex & rgb 转换, 游览器坐标与stage坐标转换。
     * Guid.js: 产生 global uid
     * EventProxy.js: 事件代理机制
