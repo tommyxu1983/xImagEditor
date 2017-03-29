@@ -3,7 +3,7 @@
 
 [transform example](examples/src/Transform.html)
 
-[成千上百的图形，实现鼠标响应](exmples/thounsands.html)
+[成千上百的图形，实现鼠标响应](examples/thounsands.html)
 
 # XIE -- eXpress Image Editor
 
