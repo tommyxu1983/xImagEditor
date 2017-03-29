@@ -11,39 +11,41 @@
 
     </style>
 </head>
-<body>
-<div  style="line-height:2em;">
-    你正在拖动，第
-    <span style="display: inline-block" id = 'infoDiv1'></span>
-    个
+<body style="background-color: #644732">
+<div  style="line-height:2em; margin: 0 auto 0 auto; width: 900px; color: antiquewhite;">
+    你正在拖动，第"<span style="display: inline-block" id = 'infoDiv1'></span>"号圆圈个
 </div>
 
-<div id = 'XIEWrapper' style="background-color: aquamarine;"></div>
+<div id = 'XIEWrapper' style="margin: 0 auto 0 auto; width: 900px;"></div>
 
-
+<!--style="background-color: aquamarine;"-->
 
 
 
 <script>
-
-
-
-
-
-
     var infoDiv1 = document.getElementById('infoDiv1');
-
-
-
     if(! XIE){   alert('XIE 没有加载正确');     }
 
-    var stageWidth = 800, stageHeight = 600;
+    var stageWidth = 900, stageHeight = 600;
+
     var stage = new  XIE.Stage({
         wrapper: 'XIEWrapper',
         width: stageWidth,
         height: stageHeight
     });
 
+
+
+
+
+
+ //var kk =0;
+
+
+</script>
+
+<script>
+    //data
     function addCircle(attr, layer){
         var  circle = new XIE.Circle({
             x: attr.x,
@@ -56,12 +58,9 @@
 
         layer.add(circle);
     }
-
-
-    //data
     var colors = ['red', 'orange', 'cyan', 'green', 'blue', 'purple'], data =[];
 
-    for(var n = 0; n < 3000; n++) {
+    for(var n = 0; n < 2500; n++) {
         var x = Math.random() * stageWidth;
         var y = stageHeight + (Math.random() * 200) - 100 + (stageHeight / stageWidth) * -1 * x;
         data.push({
@@ -78,15 +77,16 @@
     var nodeCount = 0;
     var layerNumber = 0;
     var layer = new XIE.Layer();
-    //console.time('layer_'+ layerNumber);
+    console.time('layer_'+ 0);
+    console.time('layer_'+ layerNumber);
     for(var n = 0; n < data.length; n++) {
         addCircle(data[n], layer);
         nodeCount++;
-        if(nodeCount >= 300) {
+        if(nodeCount >= 100) {
 
-           // console.timeEnd('layer_'+ layerNumber);
+            // console.timeEnd('layer_'+ layerNumber);
             layerNumber ++;
-           // console.time('layer_'+ layerNumber);
+            // console.time('layer_'+ layerNumber);
 
             nodeCount = 0;
             stage.add(layer);
@@ -96,14 +96,20 @@
 
         }
     }
-  //  console.timeEnd('layer_'+ layerNumber);
+     console.timeEnd('layer_'+ layerNumber);
+    console.timeEnd('layer_'+ 0);
     stage.add(dragLayer);
-
+    var oldLayer;
     stage.on('mousedown',function(evt){
         if(evt.target && evt.target instanceof XIE.Shape){
-            infoDiv1.innerHTML = ' '+ evt.target.attr.id + ' 号圆圈' ;
-            evt.target.parent.remove(evt.target);
+
+            infoDiv1.innerHTML = evt.target.attr.id;
+            oldLayer = evt.target.parent;
+            oldLayer.remove(evt.target);
+
             dragLayer.add(evt.target);
+            oldLayer.draw();
+            dragLayer.draw();
         }
 
 
@@ -116,11 +122,6 @@
 
     });
 
- var kk =0;
-
-
 </script>
-
-
 </body>
 </html>
