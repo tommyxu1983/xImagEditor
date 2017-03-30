@@ -1,7 +1,11 @@
 {
-  "name": "XIE",
-  "version": "1.0.1",
+  "name": "x_i_e",
+  "version": "1.0.2",
   "description": "lite weight image editor",
+  "homepage": "https://tommyxu1983.github.io/xImagEditor/",
+  "repository": "https://github.com/tommyxu1983/xImagEditor.git",
+  "main": "index.js",
+  "bin": "index.js",
   "scripts": {
     "test_APIs": "./node_modules/.bin/mocha-phantomjs test/unit_api/index.html"
   },

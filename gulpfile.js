@@ -8,7 +8,6 @@ var concat = require('gulp-concat');
 
 
 var files = [
-	/*'src/XIE.js',*/
 	'src/helpers/guid.js',
 	'src/helpers/utils.js',
 	'src/helpers/EventProxy.js',
@@ -48,7 +47,7 @@ gulp.task('build', ['concat'],function(){
 			patterns: [
 				{
 					match: 'include',
-					replace: fs.readFileSync('dist/js/pack/'+'XIEModulePacked.temp.js','utf8')
+					replace: fs.readFileSync('dist/js/pack/'+'XIEModulePacked.temp.js','utf-8')
 				}
 			]
 		}))

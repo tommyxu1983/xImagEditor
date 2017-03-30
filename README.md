@@ -1,9 +1,7 @@
 
 [project home page](https://tommyxu1983.github.io/xImagEditor/)
 
-[transform example](examples/src/Transform.html)
-
-[成千上百的图形，实现鼠标响应](examples/thounsands.html)
+[transform example](https://tommyxu1983.github.io/xImagEditor/examples/src/Transform.html) [成千上百的图形，实现鼠标响应](https://tommyxu1983.github.io/xImagEditor/examples/thounsands.html)
 
 # XIE -- eXpress Image Editor
 
@@ -11,7 +9,7 @@
 
 公司潜在的一个项目，需要使用图片处理库，试用了几个市面上的图片处理库，基本能提供项目的需求。但对 10mb
 以上的图片进行 位移，旋转， 放大，加入图形合成进图片，窗宽窗位等功能,不是非常满意。 再加上本人对 H5 canvas想要深入研究一下，
-于是一咬牙决定用空余时间自己撸一个 H5 canvas 的基础库.目前已经被用在一个工业检测项目上，效果还不错。
+于是用空余时间借鉴各大H5 canvas库，写了单为图像处理的工具集，目前已经被用在一个工业检测项目上，效果还不错。
 
 
 
@@ -20,9 +18,9 @@ XIE 命名空间，为 eXpress Image Editor 缩写。 所有东西的入口都�
 放大模式 [tight augmentation](http://www.adequatelygood.com/JavaScript-Module-Pattern-In-Depth.html) 来完成模块之间的依赖。
 
 多谢 [KineticJS](https://github.com/ericdrowell/KineticJS) , ECharts 的 2-d 基础库 [ZRender](https://github.com/ecomfe/zrender)
-对我的启发,在这里你会看到很多他们的影子。XIE功能比较简单,大多数功能其他库基本都有实现或类似，无奈拾人牙慧，加入自己的理解，写出了XIE,
-并用于公司的生产。只能说XIE更专注于图像处理,解决了canvas在某些复杂应用场景下的性能问题。可以当成您的canvas项目的基础库，或可以当成一个
-canvas深入了解的项目来使用，如果有兴趣的同学想要了解以下内容:
+对我的启发,在这里你会看到很多他们的影子。XIE功能比较简单,大多数功能其他库基本都有实现或类似，无奈拾人牙慧，加入自己的理解，写出了XIE。
+只能说XIE更专注于图像处理,解决了canvas在某些复杂应用场景下的性能问题。可以当成您的canvas项目的基础库，或可以当成一个
+canvas深入了解的项目来使用，如果有兴趣的同学想要了解以下内容，我会一一分享:
 
     * 在一张图上有成千上百图形+图片，利用多层canvas 搭建多图层，提高性能重绘性能。
     * 利用双层buffer canvas(视图层，点击层)来快速寻找图形,提高图形搜索性能。
@@ -31,42 +29,96 @@ canvas深入了解的项目来使用，如果有兴趣的同学想要了解以�
 
 也欢迎提出意见，完善本项目.我在代码里插了很多 `//todo`待改进和将要添加的功能, 有兴趣的可以一起参与
 
-```javascript
+## 如何使用 XIE
 
-var stage = new XIE.Stage(); //创建新舞台
-var layer = new XIE.Layer(); //创建新图层
-var anim = new XIE.Animation();  //创建新动画
+### 直接使用(游览器 <script src="..."></script> )
+ 1. clone 到本地 `git https://github.com/tommyxu1983/xImagEditor.git `,  或 下载 zip 并解压缩
 
+ 2. 请到 项目目录 `dist` 拷贝 __XIEGlobal.js__  或压缩版本 __XXXX.min.js__ 到你想要的路径
+
+### npm 安装
+```bash
+$ npm install x_i_e --save-dev
 ```
-### 如何使用 XIE
-1. 直接使用： 请到 项目目录 `dist` 拷贝 __XIEGlobal.js__  或压缩版本 __XXXX.min.js__ 到您的置顶目录下，并
-2. clone 到本地
-3. 想要玩一下，那就这样：
+
+```javascript
+//import {Stage, Rect, Layer} from "x_i_e";
+var XIE = require('x_i_e');
+
+var Stage = XIE.Stage, Rect =XIE.Rect, Layer = XIE.Layer;
+
+var stageWrapper = document.getElementById('XIEWrapper');
+var stage = new Stage({
+    wrapper: stageWrapper, // 可以ID或dom
+     width: 900,
+     height: 600,
+}); //创建新舞台
+var layer = new Layer(); //创建新图层
+
+var rectangular = new Rect({   //创建新矩形
+    x: 200,
+    y: 200,
+    width: 200,
+    height: 100,
+    stroke:'orange',
+    draggable: true
+});
+
+stage.add(layer);
+layer.add(rectangular);
+
+stage.draw();
+```
+
+
+## 编译 测试 XIE
+
+### 编译
+1. 命令行输入：（请预先安装 node npm）
 
 ```bash
 $ cd xImgEditor
 $ npm install
 ```
 
-### 测试
+2. 在 `gulpfile.js` 里有个变量 files, 在里面添加或删除你想要的模块，如果删除掉 __基础模块__ 会报错
 
+3. 命令行输入：
+```bash
+$ gulp build
+```
+
+
+### 测试
+1. 单测 （接口）
+2. performance （未完成）
+```bash
+$ npm run test_APIs
+```
 
 ## XIE 主要模块 和 模块之间的关系
 
 ### 项目结构
-__未完成__
 
-    |-- dist
-    |-- examples
-    |-- src
-    |    |-- container
-    |    |-- filters
-    |    |-- Grey16Bit
-    |    |-- helps
-    |    `-- shape
-    |
-    |
-    |
+    |-- dist  //--> 发布版单文件，压缩版
+    |-- examples  //--> 示例
+    |-- src  //--> 源码
+    |    |-- container   //--> Layer, group , Stage 基于Container.js
+    |    |-- filters    //--> 图片处理滤镜
+    |    |-- Grey16Bit  //--> 16位灰度 -- 8位灰度
+    |    |-- helps      //--> 基础帮助类
+    |    `-- shape      //--> 预定义图形 基于Shape.js
+    |-- Animation.js    //--> 未完成
+    |-- Container.js
+    |-- Drag.js            //--> Drag&Drop   Drag&Enlarge
+    |-- Element.js        // --> 基石模块
+    |-- Shape.js          //--> 所有shape类 都基于此模块
+    |-- Storage.js        //--> 全局 cache
+    |-- Transformable.js  //--> 位移，旋转，放大，的矩阵运算
+    |-- XCanvas.js        //--> H5 canvas 封装
+    |-- XContex.js        //--> H5 canvas.getContex("2d") 封装
+    |-- XIE.js            //--> XIE 全局 namespace， 测试用
+    `-- XIEGlobal.js      //--> XIE 全局 namespace， 打包用
 
 
 
@@ -105,3 +157,33 @@ __未完成__
         - Brighten.js
         - ContrastTo.js
         - Convert16To8.js (游览器显示不了8bit图像。用来转换16bit -> 8bit, 医学光片里的窗宽窗位会用到此类。）
+
+## 原理讲解 （稍后承上）
+
+ 1. 在一张图上有成千上百图形+图片，利用多层canvas 搭建多图层，提高性能重绘性能。
+
+ 2. 利用双层buffer canvas(视图层，点击层)来快速寻找图形,提高图形搜索性能。
+
+ 3. 如何让图形有事件机制，相应鼠标，键盘事件。
+
+ 4. 避免 位移，旋转， 放大等重绘消耗过多资源 模拟游览器冒泡机制。
+
+## 给几个 canvas 教程的传送门
+有可能被墙， 请自行架梯。
+
+[Improving HTML5 Canvas Performance](https://www.html5rocks.com/en/tutorials/canvas/performance/)
+
+[HTML5 Canvas Tutorials by Patrick Horgan](http://www.dbp-consulting.com/tutorials/canvas/index.html)
+
+[Implementing Layers in HTML5 Canvas](http://stackoverflow.com/questions/4422907/implementing-layers-in-html5-canvas)
+
+[A Gentle Introduction to Making HTML5 Canvas Interactive](https://simonsarris.com/making-html5-canvas-useful/)
+
+[Canvas Hit Detection](http://tschaub.net/blog/2011/03/31/canvas-hit-detection.html)
+
+[几种常见计算机图像处理操作的原理及canvas实现](http://xsk.tehon.org/den/index.php/category/tech/image-process-using-canvas.html)
+
+[HTML5 canvas transform与矩阵](http://www.cnblogs.com/hemei/p/4252817.html)
+
+在用 imageData 接口请小心，这可能造成性能问题，注意使用
+[Pixel manipulation with canvas](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Pixel_manipulation_with_canvas)

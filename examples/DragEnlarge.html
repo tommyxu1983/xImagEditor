@@ -13,12 +13,16 @@
 </head>
 <body style="background-color: #644732">
 <div  style="line-height:2em; margin: 0 auto 0 auto; width: 900px; color: antiquewhite;">
-    你正在拖动，<span style="display: inline-block" id = 'infoDiv1'></span>
+    舞台坐标 <span style="display: inline-block" id = 'infoDiv1'></span>
 </div>
 
 
 <div id = 'XIEWrapper' style="margin: 0 auto 0 auto; width: 900px;"></div>
-
+<div  style="line-height:2em; margin: 0 auto 0 auto; width: 900px; color: antiquewhite;">
+   虽然任何形状都可以快速检测到边缘，也都实现了拖拉放大缩小。目前只有圆 和 矩形的边缘拖拉放大视觉上是正常的，多边形随着拖拉会一起位移，初步设想是算出二维几何形状的重心，
+    但是随着 舞台和画布的 旋转放大位移，重心比较难算（现在设想是当初始化的时候，就算出重心，并保存好，然后叠加 矩阵运算，应该就能实现）
+    有什么好建议的朋友可以告诉我一下。
+</div>
 <!--style="background-color: aquamarine;"-->
 
 

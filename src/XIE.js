@@ -1,11 +1,11 @@
 /**
     XIE eXpress Image Editor framework
 **/
-
+/*
 (function(global){
 
     var XIE = {
-       /* instance : {},*/
+       /!* instance : {},*!/
     };
 
     XIE.Filters={};
@@ -31,5 +31,18 @@
     }
 
 
-})(this);
+})(this);*/
 
+
+(function (global, factory) {
+    // CMD, AMD, browser
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+        typeof define === 'function' && define.amd ? define(factory) : (global.XIE = factory());
+
+})(this, function () {
+
+    var XIE = {};
+    XIE.Filters={};
+
+    return XIE;
+});

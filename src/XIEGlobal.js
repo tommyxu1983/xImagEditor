@@ -4,37 +4,23 @@
  */
 
 
-(function(global){
-    /**
-     * this file is for compile only
-     */
 
-    var XIE = {
-        /* instance : {},*/
-    };
 
+
+(function (global, factory) {
+    // CMD, AMD, browser
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+        typeof define === 'function' && define.amd ? define(factory) : (global.XIE = factory());
+
+})(this, function () {
+
+    var XIE = {};
     XIE.Filters={};
 
 
-   @@include
+
+    @@include
 
 
-
-    /*  if(window !=='undefined'){
-     window.XIE=XIE;
-     }
-
-     else*/ if(typeof module !== 'undefined' && module.exports){
-        module.exports = XIE;
-
-    }else if(typeof define === 'function' && define.amd){
-        define('XIE',function(){
-            return XIE;
-        });
-
-    }else{
-        global.XIE=XIE;
-    }
-
-
-})(this);
+    return XIE;
+});

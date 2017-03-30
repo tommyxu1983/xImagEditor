@@ -151,60 +151,23 @@
 
         },
 
-        /*       getAbsoluteM: function(){
-         var  m = this.getSelfM(),
-         ancestorM = this.getAncestorsM();
-         m= matrix.mul(m, ancestorM );
-         return m;
-         },*/
 
         // self's transform
         getSelfM: function(){
-            console.time('getSelfM');
-            /*   console.time('0');*/
-            var scaleM = this.getM(_getScale),
+            var /*scaleM = this.getM(_getScale),
                 offsetM = this.getM(_getOffset),
                 rotateM = this.getM(_getRotation),
-                originM = this.getM(_getOrigin),
+                originM = this.getM(_getOrigin),*/
                 finalM = matrix.identity();
-            /*      console.timeEnd('0');
-             console.time('1');*/
-            finalM = matrix.mul(finalM,originM);
-            finalM = matrix.mul(finalM,scaleM);
-            finalM = matrix.mul(finalM,rotateM);
-            finalM = matrix.mul(finalM,offsetM);
-            /*         console.timeEnd('1');*/
-            console.timeEnd('getSelfM');
+
+            finalM = matrix.mul(finalM,_getOrigin.call(this));
+            finalM = matrix.mul(finalM,_getScale.call(this));
+            finalM = matrix.mul(finalM,_getRotation.call(this));
+            finalM = matrix.mul(finalM,_getOffset.call(this));
             return finalM;
         },
 
 
-        getM:function(getFn){
-            var para4M = getFn.call(this);
-            var m=matrix.identity();
-            switch(getFn.name){
-                case '_getOrigin':
-                    m= [1,0,0,1,para4M.x,para4M.y];
-                    return m;
-                    break;
-                case '_getScale':
-                    m= [para4M.x,0,0,para4M.y,0,0];
-                    return m;
-                    break;
-                case '_getOffset':
-                    m= [1,0,0,1,para4M.x,para4M.y];
-                    return m;
-                    break;
-                case '_getRotation':
-                    var cos=Math.cos,
-                        sin=Math.sin,
-                        radian = para4M*Math.PI/180,
-                        m =  [cos(radian), sin(radian),-sin(radian),cos(radian),0,0];
-                    return m;
-                    break;
-            }
-            return m;
-        },
 
         /**
          *
@@ -237,22 +200,24 @@
     function _getOrigin(){
         var oX= this.transform.x + this.attr.x,
             oY= this.transform.y +this.attr.y;
-        return {x:oX,y:oY };
+        return [1,0,0,1,oX,oY];
 
     }
     function _getOffset(){
         var oX= this.transform.offsetX + this.attr.offsetX,
             oY= this.transform.offsetY +this.attr.offsetY;
-        return {x:oX,y:oY };
+        return [1,0,0,1,oX,oY];
     }
     function _getRotation(){
-        return this.transform.rotate + this.attr.rotate;
+        var radian = (this.transform.rotate + this.attr.rotate)*Math.PI/180;
+        return  [Math.cos(radian), Math.sin(radian),-Math.sin(radian),Math.cos(radian),0,0];
+
     }
 
     function _getScale() {
         var oX= this.transform.scaleX * this.attr.scaleX,
             oY= this.transform.scaleY * this.attr.scaleY;
-        return {x:oX,y:oY };
+       return [oX,0,0,oY,0,0];
     }
 
     //private function End

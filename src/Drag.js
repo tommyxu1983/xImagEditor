@@ -124,8 +124,8 @@
             console.log('start Drag');
             var host = this.host,
                 dProfile= this.dragProfile= this.dragProfile || {} ,
-                dObj=dProfile.draggingObj = target,
-                origin = dObj.getAbsoluteOrigin(),
+                dObj=dProfile.draggingObj = target;
+                var origin = dObj.getAbsoluteOrigin(),
                 dStartXY = dProfile.dragStartXY ={x:evt.x, y:evt.y}; //记住被拖拉 鼠标点下的坐标
             console.log('x: ' +evt.x+ '  y: ' + evt.y );
             dProfile.isDragging=true;

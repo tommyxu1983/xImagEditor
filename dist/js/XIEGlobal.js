@@ -4,19 +4,22 @@
  */
 
 
-(function(global){
-    /**
-     * this file is for compile only
-     */
 
-    var XIE = {
-        /* instance : {},*/
-    };
 
+
+(function (global, factory) {
+    // CMD, AMD, browser
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+        typeof define === 'function' && define.amd ? define(factory) : (global.XIE = factory());
+
+})(this, function () {
+
+    var XIE = {};
     XIE.Filters={};
 
 
-   /**
+
+    /**
  * guid module
  */
 (function(XIE){
@@ -816,9 +819,8 @@
 
         // transform matrix including ancestor's transform matrix
         getAncestorsM: function(){
-            var ancestorsM = [1,0,0,1,0,0],
+            var ancestorsM = matrix.identity(),
                 parent = this.parent;
-
             while(parent){
                 ancestorsM = matrix.mul(ancestorsM, parent.getSelfM() );
                 parent = parent.parent;
@@ -826,53 +828,41 @@
             return ancestorsM;
         },
 
+        getAbsoluteOriginM: function(){
+
+            return this.getAncestorsM();
+
+        },
+
         getAbsoluteOrigin:function(){
             var position = {x:0, y:0}, finalM;
 
-           /* while(parent){
-                position.x += parent.attr.x +parent.attr.offsetX+parent.transform.offsetX+ parent.transform.x;
-                position.y += parent.attr.y +parent.attr.offsetY +parent.transform.offsetY+parent.transform.y;
-                parent = parent.parent;
-            }*/
+            /* while(parent){
+             position.x += parent.attr.x +parent.attr.offsetX+parent.transform.offsetX+ parent.transform.x;
+             position.y += parent.attr.y +parent.attr.offsetY +parent.transform.offsetY+parent.transform.y;
+             parent = parent.parent;
+             }*/
             finalM = matrix.mul(this.getAncestorsM(),this.getSelfM());
 
             return matrix.transformXY(finalM, position);
 
         },
 
- /*       getAbsoluteM: function(){
-            var  m = this.getSelfM(),
-                ancestorM = this.getAncestorsM();
-            m= matrix.mul(m, ancestorM );
-            return m;
-        },*/
 
         // self's transform
         getSelfM: function(){
+            var /*scaleM = this.getM(_getScale),
+                offsetM = this.getM(_getOffset),
+                rotateM = this.getM(_getRotation),
+                originM = this.getM(_getOrigin),*/
+                finalM = matrix.identity();
 
-            var finalM;
-
-            /* var shiftM = _getShiftM.call(this),
-                rotateM =_getRotationM.call(this),
-                scaleM = _getScaleM.call(this);*/
-          //  var shiftM = [1,0,0,1,(this.transform.x + this.attr.x +this.transform.offsetX + this.attr.offsetX),(this.transform.y +this.attr.y + this.transform.offsetY +this.attr.offsetY)];
-
-            var radian = (this.transform.rotate + this.attr.rotate)*Math.PI/180,
-            rotateM = [Math.cos(radian), Math.sin(radian),-Math.sin(radian),Math.cos(radian),0,0];
-
-           // var scaleM =[( this.transform.scaleX * this.attr.scaleX),0,0,(this.transform.scaleY * this.attr.scaleY),0,0];
-
-            var shiftM_x_scaleM = [( this.transform.scaleX * this.attr.scaleX),0,0,(this.transform.scaleY * this.attr.scaleY),(this.transform.x + this.attr.x +this.transform.offsetX + this.attr.offsetX),(this.transform.y +this.attr.y + this.transform.offsetY +this.attr.offsetY)];
-
-
-            //console.time('getSelfM');
-
-
-            finalM = matrix.mul(shiftM_x_scaleM,rotateM);
-          //  console.timeEnd('getSelfM');
+            finalM = matrix.mul(finalM,_getOrigin.call(this));
+            finalM = matrix.mul(finalM,_getScale.call(this));
+            finalM = matrix.mul(finalM,_getRotation.call(this));
+            finalM = matrix.mul(finalM,_getOffset.call(this));
             return finalM;
         },
-
 
 
 
@@ -882,7 +872,7 @@
          * @param y: {number} stage's y
          */
         translate2LocalXY: function(x, y){
-            var originM = this.getAncestorsM(),
+            var originM = this.getAbsoluteOriginM(),
                 transformM =this.getSelfM(), invertM;
             transformM = matrix.mul(originM, transformM);
 
@@ -892,7 +882,6 @@
         },
 
     };
-
 
     function _setToInit(){
         // this = element;
@@ -905,30 +894,28 @@
         this.transform.rotate=0;
     }
 
-/*    function _getShiftM(){
-        var x = this.transform.x + this.attr.x +this.transform.offsetX + this.attr.offsetX;
-        var y =  this.transform.y +this.attr.y + this.transform.offsetY +this.attr.offsetY;
-        return [1,0,0,1,x,y];
-    }
-
-
-
-
-    function _getRotationM(){
-
-        var cos=Math.cos,
-            sin=Math.sin,
-            rotation =this.transform.rotate + this.attr.rotate,
-            radian = rotation*Math.PI/180;
-            return [cos(radian), sin(radian),-sin(radian),cos(radian),0,0];
+    function _getOrigin(){
+        var oX= this.transform.x + this.attr.x,
+            oY= this.transform.y +this.attr.y;
+        return [1,0,0,1,oX,oY];
 
     }
+    function _getOffset(){
+        var oX= this.transform.offsetX + this.attr.offsetX,
+            oY= this.transform.offsetY +this.attr.offsetY;
+        return [1,0,0,1,oX,oY];
+    }
+    function _getRotation(){
+        var radian = (this.transform.rotate + this.attr.rotate)*Math.PI/180;
+        return  [Math.cos(radian), Math.sin(radian),-Math.sin(radian),Math.cos(radian),0,0];
 
-    function _getScaleM() {
-        var x = this.transform.scaleX * this.attr.scaleX,
-            y = this.transform.scaleY * this.attr.scaleY;
-        return [x,0,0,y,0,0];
-    }*/
+    }
+
+    function _getScale() {
+        var oX= this.transform.scaleX * this.attr.scaleX,
+            oY= this.transform.scaleY * this.attr.scaleY;
+       return [oX,0,0,oY,0,0];
+    }
 
     //private function End
 
@@ -1291,8 +1278,8 @@
             console.log('start Drag');
             var host = this.host,
                 dProfile= this.dragProfile= this.dragProfile || {} ,
-                dObj=dProfile.draggingObj = target,
-                origin = dObj.getAbsoluteOrigin(),
+                dObj=dProfile.draggingObj = target;
+                var origin = dObj.getAbsoluteOrigin(),
                 dStartXY = dProfile.dragStartXY ={x:evt.x, y:evt.y}; //记住被拖拉 鼠标点下的坐标
             console.log('x: ' +evt.x+ '  y: ' + evt.y );
             dProfile.isDragging=true;
@@ -2034,7 +2021,7 @@
 
 
         drawShape: function(shape){
-            var originM = shape.getAncestorsM();
+            var originM = shape.getAbsoluteOriginM();
             var transformM =shape.getSelfM();
 
             this.setTransform(originM[0],originM[1],originM[2],originM[3],originM[4],originM[5]);
@@ -3687,22 +3674,5 @@
 })(XIE);
 
 
-
-    /*  if(window !=='undefined'){
-     window.XIE=XIE;
-     }
-
-     else*/ if(typeof module !== 'undefined' && module.exports){
-        module.exports = XIE;
-
-    }else if(typeof define === 'function' && define.amd){
-        define('XIE',function(){
-            return XIE;
-        });
-
-    }else{
-        global.XIE=XIE;
-    }
-
-
-})(this);
+    return XIE;
+});
